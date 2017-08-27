@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTTaskNode.h"
-#include "FocusAtPoint.generated.h"
+#include "FocusAtActor.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class TESTINGGROUNDS_API UFocusAtPoint : public UBTTaskNode
+class TESTINGGROUNDS_API UFocusAtActor : public UBTTaskNode
 {
 	GENERATED_BODY()
 	
@@ -20,7 +20,7 @@ class TESTINGGROUNDS_API UFocusAtPoint : public UBTTaskNode
 private:
 
 	UPROPERTY(EditAnywhere, Category = "Blackboard")
-	struct FBlackboardKeySelector FocusLocation;
+	struct FBlackboardKeySelector EnemyKey;
 	
 	
 };
