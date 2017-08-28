@@ -50,7 +50,6 @@ void AFirstPersonCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	Gun = GetWorld()->SpawnActor<AGun>(GunBP);
-
 	Gun->SetOwner(this);
 	Gun->AnimInstance = Mesh1P->GetAnimInstance();
 

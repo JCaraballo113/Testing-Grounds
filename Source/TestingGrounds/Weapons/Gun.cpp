@@ -29,7 +29,7 @@ void AGun::BeginPlay()
 {
 	Super::BeginPlay();
 
-	MuzzleLocation->AttachToComponent(GunMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("Muzzle"));
+	//MuzzleLocation->AttachToComponent(GunMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("Muzzle"));
 }
 
 // Called every frame
