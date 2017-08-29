@@ -31,6 +31,7 @@ EBTNodeResult::Type UChooseNextWaypoint::ExecuteTask(UBehaviorTreeComponent & Ow
 	if (PatrolPoints.Num() <= 0)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Set some on %s patrol points first."), *AIPawn->GetName());
+		return EBTNodeResult::Failed;
 	}
 
 	// Set the next waypoint on the blackboard
