@@ -30,7 +30,7 @@ public:
 
 
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
-		void FireWeapon() const;
+		void PullTrigger();
 
 	UFUNCTION(BlueprintCallable, Category = "Health")
 		bool IsDead() const;
