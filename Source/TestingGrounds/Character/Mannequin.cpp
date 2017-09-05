@@ -52,12 +52,26 @@ void AMannequin::BeginPlay()
 	}
 
 	Gun = GetWorld()->SpawnActor<AGun>(GunBlueprint);
-	Gun->AttachToComponent(FPArms, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint")); //Attach gun mesh component to Skeleton, doing it here because the skelton is not yet created in the constructor
-	Gun->AnimInstance = GetMesh()->GetAnimInstance();
+	SetGunAttatchment();
+
+	Gun->FPAnimInstance = FPArms->GetAnimInstance();
+	Gun->TPAnimInstance = GetMesh()->GetAnimInstance();
 
 	if (InputComponent != NULL)
 	{
 		InputComponent->BindAction("Fire", IE_Pressed, this, &AMannequin::PullTrigger);
+	}
+}
+
+void AMannequin::SetGunAttatchment()
+{
+	if (IsPlayerControlled())
+	{
+		Gun->AttachToComponent(FPArms, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
+	}
+	else
+	{
+		Gun->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
 	}
 }
 
@@ -75,9 +89,16 @@ void AMannequin::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 
 }
 
+void AMannequin::UnPossessed()
+{
+	Super::UnPossessed();
+
+	if (!ensure(Gun)) { return; }
+	Gun->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
+}
+
 float AMannequin::TakeDamage(float Damage, FDamageEvent const & DamageEvent, AController * EventInstigator, AActor * DamageCauser)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Damaged"));
 	int32 DamagePoints = FPlatformMath::RoundToInt(Damage);
 	auto DamageToApply = FMath::Clamp<int32>(DamagePoints, 0, Health);
 

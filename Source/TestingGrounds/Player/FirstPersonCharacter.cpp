@@ -51,7 +51,7 @@ void AFirstPersonCharacter::BeginPlay()
 
 	Gun = GetWorld()->SpawnActor<AGun>(GunBP);
 	Gun->SetOwner(this);
-	Gun->AnimInstance = Mesh1P->GetAnimInstance();
+	Gun->TPAnimInstance = Mesh1P->GetAnimInstance();
 
 	Gun->AttachToComponent(Mesh1P, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
 }

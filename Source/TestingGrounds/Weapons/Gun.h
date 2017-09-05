@@ -42,10 +42,16 @@ public:
 
 	/** AnimMontage to play each time we fire */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
-		class UAnimMontage* FireAnimation;
+		class UAnimMontage* TPFireAnim;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
-		class UAnimInstance* AnimInstance;
+		class UAnimMontage* FPFireAnim;
+
+	UPROPERTY()
+		class UAnimInstance* TPAnimInstance;
+
+	UPROPERTY()
+		class UAnimInstance* FPAnimInstance;
 
 	/** Fires a projectile. */
 	UFUNCTION(BlueprintCallable, Category = "Firing")
