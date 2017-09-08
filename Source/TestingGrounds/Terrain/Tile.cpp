@@ -25,15 +25,16 @@ void ATile::Tick(float DeltaTime)
 
 }
 
-void ATile::PlaceActors()
+void ATile::PlaceActors(TSubclassOf<AActor> ToSpawn, int MinSpawn, int MaxSpawn)
 {
 	FVector Min(0, -2000, 0);
 	FVector Max(4000, 2000, 0);
 	FBox TileBox = FBox(Min, Max);
+	int32 NumberToSpawn = FMath::RandRange(MinSpawn, MaxSpawn);
 	
-	for (size_t i = 0; i < 20; i++)
+	for (size_t i = 0; i < NumberToSpawn; i++)
 	{
 		FVector SpawnPoint = FMath::RandPointInBox(TileBox);
-		UE_LOG(LogTemp, Warning, TEXT("Spawn point is: %s"), *SpawnPoint.ToCompactString());
+		AActor* Spawned = GetWorld()->SpawnActor<AActor>(ToSpawn);
 	}
 }
