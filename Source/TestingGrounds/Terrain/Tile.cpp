@@ -17,7 +17,7 @@ ATile::ATile()
 void ATile::BeginPlay()
 {
 	Super::BeginPlay();
-	CastSphere(GetActorLocation(), 300);
+	CanSpawnAtLocation(GetActorLocation(), 300);
 }
 
 // Called every frame
@@ -27,28 +27,57 @@ void ATile::Tick(float DeltaTime)
 
 }
 
-bool ATile::CastSphere(FVector Location, float Radius)
+bool ATile::CanSpawnAtLocation(FVector Location, float Radius)
 {
 	FHitResult HitResult;
+	FVector GlobalLocation = ActorToWorld().TransformPosition(Location);
 
 	bool HasHit = GetWorld()->SweepSingleByChannel(
 		HitResult,
-		Location,
-		Location,
+		GlobalLocation,
+		GlobalLocation,
 		FQuat::Identity,
 		ECollisionChannel::ECC_GameTraceChannel2,
 		FCollisionShape::MakeSphere(Radius)
 	);
 
-	FColor SphereColor = HasHit ? FColor::Red : FColor::Green;
+	//FColor ResultColor = HasHit ? FColor::Red : FColor::Green;
 
-	DrawDebugCapsule(GetWorld(), Location, 0, Radius, FQuat::Identity, SphereColor, true, 100.f);
-	UE_LOG(LogTemp, Warning, TEXT("%i"), HasHit);
+	//DrawDebugCapsule(GetWorld(), GlobalLocation, 0, Radius, FQuat::Identity, ResultColor, true, 100);
 
-	return HasHit;
+	return !HasHit;
 }
 
-void ATile::PlaceActors(TSubclassOf<AActor> ToSpawn, int MinSpawn, int MaxSpawn)
+bool ATile::FindEmptyLocation(FVector& OutLocation, float Radius)
+{
+	FVector Min(0, -2000, 0);
+	FVector Max(4000, 2000, 0);
+	FBox TileBox = FBox(Min, Max);
+
+	const int32 MAX_ATTEMPTS = 100;
+
+	for (size_t i = 0; i < MAX_ATTEMPTS; i++)
+	{
+		FVector SpawnPoint = FMath::RandPointInBox(TileBox);
+
+		if (CanSpawnAtLocation(SpawnPoint, Radius))
+		{
+			OutLocation = SpawnPoint;
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void ATile::PlaceActor(TSubclassOf<AActor> ToSpawn, FVector SpawnPoint)
+{
+	AActor* Spawned = GetWorld()->SpawnActor<AActor>(ToSpawn);
+	Spawned->SetActorRelativeLocation(SpawnPoint);
+	Spawned->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
+}
+
+void ATile::PlaceActors(TSubclassOf<AActor> ToSpawn, int MinSpawn, int MaxSpawn, float Radius)
 {
 	FVector Min(0, -2000, 0);
 	FVector Max(4000, 2000, 0);
@@ -57,9 +86,11 @@ void ATile::PlaceActors(TSubclassOf<AActor> ToSpawn, int MinSpawn, int MaxSpawn)
 	
 	for (size_t i = 0; i < NumberToSpawn; i++)
 	{
-		FVector SpawnPoint = FMath::RandPointInBox(TileBox);
-		AActor* Spawned = GetWorld()->SpawnActor<AActor>(ToSpawn);
-		Spawned->SetActorRelativeLocation(SpawnPoint);
-		Spawned->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
+		FVector SpawnPoint;
+		bool bIsFound = FindEmptyLocation(SpawnPoint, Radius);
+		if (bIsFound)
+		{
+			PlaceActor(ToSpawn, SpawnPoint);
+		}
 	}
 }
